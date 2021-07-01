@@ -16,6 +16,7 @@ class RecipeViewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(recipe.title),
@@ -52,9 +53,9 @@ class RecipeViewScreen extends StatelessWidget {
 
     markdown += "## Instructions \n"; // add steps header
 
-    for (var step in recipe.steps) {
-      // add each step as a dot point
-      markdown += "- $step\n";
+    for (var i = 0; i < recipe.steps.length; i++) {
+      // add each step as a numbered point
+      markdown += "${i+1}. ${recipe.steps[i]}\n";
     }
 
     return markdown;
