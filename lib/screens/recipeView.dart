@@ -1,39 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import 'recipeEdit.dart';
+import 'recipesList.dart';
+
 import '../storage/recipeStore.dart';
 
 class RecipeViewScreen extends StatelessWidget {
 
-  final String title;
+  final Recipe recipe;
 
   RecipeViewScreen({
-    required this.title
+    required this.recipe
   });
 
   @override
   Widget build(BuildContext context) {
-    final db = RecipeStore();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("View"),
+        title: Text(recipe.title),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          onPressed: () {},
+          icon: Icon(Icons.close),
+          onPressed: () => close(context),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
               icon: Icon(Icons.edit),
-              onPressed: () {},
+              onPressed: () => openEditor(context),
             ),
           )
         ],
       ),
-    );
 
+      body: Markdown(data: getRawMarkdown()),
+    );
+  }
+
+  String getRawMarkdown() {
+    String markdown = "";
+
+    markdown += "# ${recipe.title}\n"; // add title
+    markdown += "${recipe.description}\n"; // add description
+    markdown += "## Ingredients \n"; // add ingredients header
+
+    for (var ingredient in recipe.ingredients) {
+      // add each ingredient as a dot point
+      markdown += "- $ingredient\n";
+    }
+
+    markdown += "## Instructions \n"; // add steps header
+
+    for (var step in recipe.steps) {
+      // add each step as a dot point
+      markdown += "- $step\n";
+    }
+
+    return markdown;
+  }
+
+  void close(BuildContext context) {
+    Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (context) => RecipesListScreen())
+    );
+  }
+
+  void openEditor(BuildContext context) {
+    Navigator.pushReplacement(
+      context, 
+      MaterialPageRoute(builder: (context) => RecipeEditScreen(
+        recipeTitle: recipe.title,
+        editMode: true,
+        fromListScreen: false,
+      ))
+    );
   }
 
 }

@@ -63,9 +63,6 @@ class RecipeStore {
   /* Dealing with individual recipes
   These are stored in json files*/
   Future<File> writeRecipe(Recipe recipe) async {
-    //delete if already exists to remove dupe
-    await deleteRecipe(recipe.title);
-
     //get json data
     final file = await _recipeFile(recipe.title);
     final jsonData = recipe.toJSON();

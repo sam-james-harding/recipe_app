@@ -19,12 +19,12 @@ class _ListEditWidgetState extends State<ListEditWidget> {
       return Expanded(
         child: ListView(
 
-          children: widget.items.map((item) => 
+          children: widget.items.asMap().entries.map((item) => 
             Container(
               key: UniqueKey(),
               child: _ListEditItem(
-                text: item,
-                index: widget.items.indexOf(item), 
+                text: item.value,
+                index: item.key, 
                 onRemove: removeItem,
                 onChangeSubmitted: changeItem,
               )
@@ -64,9 +64,18 @@ class _ListEditWidgetState extends State<ListEditWidget> {
   }
 
   void addItem(String itemText) {
-    setState(() {
-      widget.items.add(itemText);
-    });
+    if (itemText != "") {
+      setState(() {widget.items.add(itemText);});
+    }
+    else {
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) => AlertDialog(
+          title: Text("No Text Written"),
+          content: Text("Please write some text before you submit the new item.")
+        )
+      );
+    }
   }
 
   void removeItem(int index) {
@@ -146,7 +155,7 @@ class _ListEditItem extends StatelessWidget {
       child: ListTile(
         title: TextField(
             controller: _controller,
-            onSubmitted: (value) => onChangeSubmitted(index, value),
+            onChanged: (value) => onChangeSubmitted(index, value),
           ),
 
         //remove button

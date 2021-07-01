@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../widgets/listEditor.dart';
 import '../widgets/descriptionTab.dart';
+
 import 'recipesList.dart';
+import 'recipeView.dart';
 
 import '../storage/recipeStore.dart';
 
@@ -13,7 +15,7 @@ class RecipeEditScreen extends StatefulWidget {
   final bool editMode;
   final bool fromListScreen;
 
-  final RecipeStore db = RecipeStore();
+  final RecipeStore storage = RecipeStore();
 
   RecipeEditScreen({
     required this.editMode,
@@ -68,7 +70,7 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
   }
 
   void populateFields() async {
-    final recipeJSON = await widget.db.getRecipe(widget.recipeTitle!);
+    final recipeJSON = await widget.storage.getRecipe(widget.recipeTitle!);
 
     title = recipeJSON.title;
     description = recipeJSON.description;
@@ -123,7 +125,12 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
       );
     }
     else {
-
+      widget.storage.getRecipe(title).then((value) => {
+        Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (context) => RecipeViewScreen(recipe: value))
+      )
+      });
     }
   }
 
@@ -154,6 +161,9 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
   void onDescriptionChange(String newDescription) {description = newDescription;}
 
   void saveData() {
+    widget.storage.recipeNames().then((recipeNames) {
+    print(recipeNames);
+    print(recipeNames.contains(widget.recipeTitle));
     if ((title == "") || (description == "") || (steps.isEmpty) || (ingredients.isEmpty)) {
       showDialog(
         context: context, 
@@ -164,6 +174,17 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
         )
       );
     }
+
+    else if (recipeNames.contains(title) && ((widget.editMode == false) || (widget.recipeTitle != title))) {
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) => AlertDialog(
+          title: Text("Name Already in Use"),
+          content: Text("This recipe name is already in use. Please choose another one.")
+        )
+      );
+    }
+    
     else {
       Recipe newRecipe = Recipe(
         title: title,
@@ -172,7 +193,15 @@ class _RecipeEditScreenState extends State<RecipeEditScreen> {
         ingredients: ingredients
       );
 
-      widget.db.writeRecipe(newRecipe).then((value) => returnToLastWindow());
+      if (widget.editMode) {
+        widget.storage.deleteRecipe(widget.recipeTitle!).then((value) => {
+          widget.storage.writeRecipe(newRecipe).then((value) => returnToLastWindow())
+        });
+      }
+      else {
+        widget.storage.writeRecipe(newRecipe).then((value) => returnToLastWindow());
+      }
     }
+    });
   }
 }

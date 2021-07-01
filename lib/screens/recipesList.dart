@@ -117,10 +117,13 @@ class _RecipesListScreenState extends State<RecipesListScreen> {
 
   //open recipe when tapped
   void openRecipe(String name) {
-    Navigator.pushReplacement(
-      context, 
-      MaterialPageRoute(builder: (context) => RecipeViewScreen(title: name))
-    );
+    widget.storage.getRecipe(name).then((value) => {
+      Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (context) => RecipeViewScreen(recipe: value))
+      )
+    });
+    
   }
 
   //create new recipe (change screen)
