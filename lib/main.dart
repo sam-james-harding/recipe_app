@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/recipesList.dart';
+import 'screens/recipesList.dart';
 
 void main() {
   runApp(RecipeApp());

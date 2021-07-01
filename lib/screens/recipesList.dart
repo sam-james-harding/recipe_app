@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import './recipeItem.dart';
+import '../widgets/recipeItem.dart';
 import '../storage/recipeStore.dart';
 
 import 'recipeEdit.dart';
+import 'recipeView.dart';
 
 class RecipesListScreen extends StatefulWidget {
   final RecipeStore storage = RecipeStore();
@@ -102,12 +103,13 @@ class _RecipesListScreenState extends State<RecipesListScreen> {
   void editRecipe(int index) {
     String name = _recipeNames[index];
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context, 
       MaterialPageRoute(builder: (context) {
         return RecipeEditScreen(
           recipeTitle: name,
-          editMode: true
+          editMode: true,
+          fromListScreen: true,
         );
       })
     );
@@ -115,15 +117,21 @@ class _RecipesListScreenState extends State<RecipesListScreen> {
 
   //open recipe when tapped
   void openRecipe(String name) {
-    print("Open $name");
+    Navigator.pushReplacement(
+      context, 
+      MaterialPageRoute(builder: (context) => RecipeViewScreen(title: name))
+    );
   }
 
   //create new recipe (change screen)
   void newRecipe() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context, 
       MaterialPageRoute(builder: (context) {
-        return RecipeEditScreen(editMode: false);
+        return RecipeEditScreen(
+          editMode: false,
+          fromListScreen: true,
+        );
       })
     );
   }

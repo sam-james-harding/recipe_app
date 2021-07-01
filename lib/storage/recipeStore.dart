@@ -3,10 +3,6 @@ import 'dart:convert';
 
 import 'package:path_provider/path_provider.dart';
 
-// test save dir:
-// /Users/sam/Library/Developer/CoreSimulator/Devices/E0320206-C8DC-44B7-A59B-8B13D617AF58/data/Containers/Data/Application/F090A30B-32F2-4430-80DC-2C9E70E3908F/Documents/recipes 
-
-
 class RecipeStore {
 
   Future<File> get _recipeNamesFile async {
@@ -14,7 +10,7 @@ class RecipeStore {
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
 
-    File recipeNamesFile = File("$path/recipes/recipeNames.txt");
+    File recipeNamesFile = File("$path/Recipes/recipeNames.txt");
 
     //create file only if it does not exist already
     bool fileExists = await recipeNamesFile.exists();
@@ -31,7 +27,7 @@ class RecipeStore {
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
 
-    File recipeFile = File("$path/recipes/$title.json");
+    File recipeFile = File("$path/Recipes/$title.json");
 
     //create file only if it does not exist already
     bool fileExists = await recipeFile.exists();
@@ -67,6 +63,9 @@ class RecipeStore {
   /* Dealing with individual recipes
   These are stored in json files*/
   Future<File> writeRecipe(Recipe recipe) async {
+    //delete if already exists to remove dupe
+    await deleteRecipe(recipe.title);
+
     //get json data
     final file = await _recipeFile(recipe.title);
     final jsonData = recipe.toJSON();
